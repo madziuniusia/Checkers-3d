@@ -1,0 +1,62 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px;
+    background-color: greenyellow;
+    margin: 5px;
+    border-radius: 10px;
+}
+
+#header {
+    border: 1px solid lightblue;
+    background-color: lightblue;
+    width: 100vw;
+    height: 50px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#logowanie,
+#alert {
+    width: 300px;
+    height: 300px;
+    border: 1px solid greenyellow;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 30vh;
+    left: 37vw;
+    background-color: lightblue;
+}
+
+#alert {
+    display: none;
+}
+
+body {
+    background-color: black;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+}
+
+#p {
+    color: greenyellow;
+    padding: 5px;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
