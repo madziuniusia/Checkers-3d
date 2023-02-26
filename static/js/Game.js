@@ -187,7 +187,6 @@ class Game {
             this.chessboardObject[x - 1][z + 1].material = this.materialPicked;
             this.chessboardObject[x - 1][z + 1].color = "gray";
           }
-
           if (
             x - 2 >= 0 &&
             z + 2 <= 7 &&
@@ -220,7 +219,7 @@ class Game {
           this.myNumber == "player2" &&
           this.Pawnclick.clicked == true
         ) {
-          if (x + 1 <= 7 && z + 1 <= 7 && this.pawnArr[x + 1][z + 1] == 0) {
+          if (this.pawnArr[x + 1][z + 1] == 0 && x + 1 <= 7 && z + 1 <= 7) {
             this.chessboardObject[x + 1][z + 1].material = this.materialPicked;
             this.chessboardObject[x + 1][z + 1].color = "gray";
           }
@@ -228,21 +227,26 @@ class Game {
           if (
             x + 2 <= 7 &&
             z + 2 <= 7 &&
-            this.pawnArr[x + 1][z + 1] == 2 &&
+            this.pawnArr[x + 1][z + 1] == 1 &&
             this.pawnArr[x + 2][z + 2] == 0
           ) {
             this.chessboardObject[x + 2][z + 2].material = this.materialPicked;
             this.chessboardObject[x + 2][z + 2].color = "gray";
           }
 
-          if (x + 1 <= 7 && z - 1 >= 0 && this.pawnArr[x + 1][z - 1] == 0) {
+          if (
+            x + 1 <= 7 &&
+            z - 1 >= 0 &&
+            this.pawnArr[x + 1][z - 1] != 1 &&
+            this.pawnArr[x + 1][z - 1] != 2
+          ) {
             this.chessboardObject[x + 1][z - 1].material = this.materialPicked;
             this.chessboardObject[x + 1][z - 1].color = "gray";
           }
           if (
             x + 2 <= 7 &&
             z - 2 >= 0 &&
-            this.pawnArr[x + 1][z - 1] == 2 &&
+            this.pawnArr[x + 1][z - 1] == 1 &&
             this.pawnArr[x + 2][z - 2] == 0
           ) {
             this.chessboardObject[x + 2][z - 2].material = this.materialPicked;
@@ -273,9 +277,10 @@ class Game {
           ) {
             element.position.x = x * 100 - 350;
             element.position.z = z * 100 - 350;
+            this.pawnArr[x][z] = 1;
           }
         });
-      } else {
+      } else if (player == "player2") {
         this.pawnGroupGreen.children.forEach((element) => {
           if (
             element.position.x == i * 100 - 350 &&
@@ -283,12 +288,12 @@ class Game {
           ) {
             element.position.x = x * 100 - 350;
             element.position.z = z * 100 - 350;
+            this.pawnArr[x][z] = 2;
           }
         });
       }
       this.pawnArr[i][j] = 0;
       if (this.myNumber == "player1") {
-        this.pawnArr[x][z] = 1;
         if (i - x >= 2) {
           this.pawnArr[x - 1][z + 1] = 0;
           //zbicie, usuniecie pionka
@@ -297,7 +302,6 @@ class Game {
           //zbicie, usuniecie pionka
         }
       } else {
-        this.pawnArr[x][z] = 2;
         if (i - x >= 2) {
           this.pawnArr[x + 1][z + 1] = 0;
         } else if (i - x <= -2) {
@@ -351,6 +355,7 @@ class Game {
             }
           }
         }
+        console.table(this.pawnArr);
         // sending a stack of pawns
         const client = io();
         client.emit("turn", {
