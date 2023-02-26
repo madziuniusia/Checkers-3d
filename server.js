@@ -1,9 +1,17 @@
 //const
-const express = require("express");
-const app = express();
 const PORT = 3000;
 const path = require("path");
-const { exit } = require("process");
+const express = require("express");
+const app = express();
+const http = require("http");
+
+const server = http.createServer(app); // tu zmiana
+const { Server } = require("socket.io");
+const socketio = new Server(server);
+
+const users = [];
+const usersData = [{ player1: { name: "" }, player2: { name: "" } }];
+let player = "player1";
 
 app.use(express.json());
 
@@ -13,12 +21,27 @@ app.get("/", function (req, res) {
 
 app.use(express.static("static"));
 
-const users = [];
-const usersData = [
-  { player1: { name: "", color: "" }, player2: { name: "", color: "" } },
-];
-let player = "player1";
-let wait = { wait: true };
+app.post("/TwoPlayers", function (req, res) {
+  res.setHeader("content-type", "application/json");
+  if (users.length == 2) {
+    res.end(JSON.stringify(true));
+  } else {
+    res.end(JSON.stringify(false));
+  }
+});
+
+socketio.on("connection", (client) => {
+  client.on("turn", (data) => {
+    console.log(data);
+    client.broadcast.emit("turn", {
+      X: data.X,
+      Z: data.Z,
+      I: data.I,
+      J: data.J,
+      player: data.player,
+    });
+  });
+});
 
 app.post("/api", function (req, res) {
   res.setHeader("content-type", "application/json");
@@ -27,12 +50,10 @@ app.post("/api", function (req, res) {
       users.push(req.body.user);
       if (users.length == 1) {
         usersData[0].player1.name = req.body.user;
-        usersData[0].player1.color = "green";
+        player = "player1";
       } else {
         usersData[0].player2.name = req.body.user;
-        usersData[0].player2.color = "yellow";
         player = "player2";
-        wait.wait = false;
       }
 
       let context = [
@@ -40,7 +61,6 @@ app.post("/api", function (req, res) {
           user: req.body.user,
           data: usersData,
           numberOfPlayer: player,
-          wait: wait,
         },
       ];
       res.end(JSON.stringify(context));
@@ -53,6 +73,6 @@ app.post("/api", function (req, res) {
 });
 
 //nasluch
-app.listen(PORT, function () {
-  console.log("start serwera na porcie " + PORT);
+server.listen(PORT, () => {
+  console.log("server listening on " + PORT);
 });

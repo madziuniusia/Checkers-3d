@@ -39,6 +39,7 @@ button {
 
 #alert {
     display: none;
+    text-align: center;
 }
 
 body {
