@@ -125,6 +125,8 @@ class Game {
     this.pawnGroup = new THREE.Group();
     this.pawnGroupYellow = new THREE.Group();
     this.pawnGroupGreen = new THREE.Group();
+    this.pawnGroupYellowRemove = new THREE.Group();
+    this.pawnGroupGreenRemove = new THREE.Group();
     this.cylinder = new THREE.CylinderGeometry(40, 40, 25, 32);
 
     for (let i = 0; i < this.chessboard.length; i++) {
@@ -183,7 +185,7 @@ class Game {
         let z = (this.Pawnclick.object.position.z + 350) / 100;
 
         if (this.myNumber == "player1" && this.Pawnclick.clicked == true) {
-          if (this.pawnArr[x - 1][z + 1] == 0 && x - 1 >= 0 && z + 1 <= 7) {
+          if (x - 1 >= 0 && z + 1 <= 7 && this.pawnArr[x - 1][z + 1] == 0) {
             this.chessboardObject[x - 1][z + 1].material = this.materialPicked;
             this.chessboardObject[x - 1][z + 1].color = "gray";
           }
@@ -275,9 +277,12 @@ class Game {
             element.position.x == i * 100 - 350 &&
             element.position.z == j * 100 - 350
           ) {
-            element.position.x = x * 100 - 350;
-            element.position.z = z * 100 - 350;
+            new TWEEN.Tween(element.position)
+              .to({ x: x * 100 - 350, z: z * 100 - 350 }, 500)
+              .easing(TWEEN.Easing.Bounce.Out)
+              .start();
             this.pawnArr[x][z] = 1;
+            this.pawnArr[i][j] = 0;
           }
         });
       } else if (player == "player2") {
@@ -286,32 +291,69 @@ class Game {
             element.position.x == i * 100 - 350 &&
             element.position.z == j * 100 - 350
           ) {
-            element.position.x = x * 100 - 350;
-            element.position.z = z * 100 - 350;
+            new TWEEN.Tween(element.position)
+              .to({ x: x * 100 - 350, z: z * 100 - 350 }, 500)
+              .easing(TWEEN.Easing.Bounce.Out)
+              .start();
             this.pawnArr[x][z] = 2;
+            this.pawnArr[i][j] = 0;
           }
         });
       }
-      this.pawnArr[i][j] = 0;
       if (this.myNumber == "player1") {
-        if (i - x >= 2) {
+        if (j - z == 2) {
           this.pawnArr[x - 1][z + 1] = 0;
-          //zbicie, usuniecie pionka
-        } else if (i - x <= -2) {
+          this.pawnGroupYellow.children.forEach((element) => {
+            if (
+              element.position.x == (x - 1) * 100 - 350 &&
+              element.position.z == (z + 1) * 100 - 350
+            ) {
+              this.pawnGroupYellowRemove.add(element);
+              this.pawnGroupYellowRemove.removeFromParent(element);
+            }
+          });
+        } else if (j - z == -2) {
           this.pawnArr[x - 1][z - 1] = 0;
-          //zbicie, usuniecie pionka
+          this.pawnGroupYellow.children.forEach((element) => {
+            if (
+              element.position.x == (x - 1) * 100 - 350 &&
+              element.position.z == (z - 1) * 100 - 350
+            ) {
+              this.pawnGroupYellowRemove.add(element);
+              this.pawnGroupYellowRemove.removeFromParent(element);
+            }
+          });
         }
       } else {
-        if (i - x >= 2) {
+        if (j - z == 2) {
           this.pawnArr[x + 1][z + 1] = 0;
-        } else if (i - x <= -2) {
+          this.pawnGroupGreen.children.forEach((element) => {
+            if (
+              element.position.x == (x + 1) * 100 - 350 &&
+              element.position.z == (z + 1) * 100 - 350
+            ) {
+              this.pawnGroupGreenRemove.add(element);
+              this.pawnGroupGreenRemove.removeFromParent(element);
+            }
+          });
+        } else if (j - z == -2) {
           this.pawnArr[x + 1][z - 1] = 0;
+          this.pawnGroupGreen.children.forEach((element) => {
+            if (
+              element.position.x == (x + 1) * 100 - 350 &&
+              element.position.z == (z - 1) * 100 - 350
+            ) {
+              this.pawnGroupGreenRemove.add(element);
+              this.pawnGroupGreenRemove.removeFromParent(element);
+            }
+          });
         }
       }
     }
   }
 
   render = () => {
+    TWEEN.update();
     requestAnimationFrame(this.render);
     this.renderer.render(this.scene, this.camera);
 
@@ -319,8 +361,10 @@ class Game {
       let i = (this.Pawnclick.object.position.x + 350) / 100;
       let j = (this.Pawnclick.object.position.z + 350) / 100;
 
-      this.Pawnclick.object.position.z = this.Boxclick.j;
-      this.Pawnclick.object.position.x = this.Boxclick.i;
+      new TWEEN.Tween(this.Pawnclick.object.position)
+        .to({ x: this.Boxclick.i, z: this.Boxclick.j }, 500)
+        .easing(TWEEN.Easing.Bounce.Out)
+        .start();
 
       let x = this.Boxclick.object.x;
       let z = this.Boxclick.object.z;
@@ -330,20 +374,54 @@ class Game {
         if (this.myNumber == "player1") {
           this.Pawnclick.object.material = this.materialYellow;
           this.pawnArr[x][z] = 1;
-          if (i - x >= 2) {
-            this.pawnArr[x - 1][z + 1] = 0;
-            //zbicie, usuniecie pionka
-          } else if (i - x <= -2) {
-            this.pawnArr[x - 1][z - 1] = 0;
-            //zbicie, usuniecie pionka
+          if (j - z == 2) {
+            this.pawnGroupGreen.children.forEach((element) => {
+              if (
+                element.position.x == (x + 1) * 100 - 350 &&
+                element.position.z == (z + 1) * 100 - 350
+              ) {
+                this.pawnGroupGreenRemove.add(element);
+                this.pawnGroupGreenRemove.removeFromParent(element);
+                this.pawnArr[x + 1][z + 1] = 0;
+              }
+            });
+          } else if (j - z == -2) {
+            this.pawnGroupGreen.children.forEach((element) => {
+              if (
+                element.position.x == (x + 1) * 100 - 350 &&
+                element.position.z == (z - 1) * 100 - 350
+              ) {
+                this.pawnGroupGreenRemove.add(element);
+                this.pawnGroupGreenRemove.removeFromParent(element);
+                this.pawnArr[x + 1][z - 1] = 0;
+              }
+            });
           }
         } else {
           this.Pawnclick.object.material = this.materialGreen;
           this.pawnArr[x][z] = 2;
-          if (i - x >= 2) {
-            this.pawnArr[x + 1][z + 1] = 0;
-          } else if (i - x <= -2) {
-            this.pawnArr[x + 1][z - 1] = 0;
+          if (j - z == 2) {
+            this.pawnGroupYellow.children.forEach((element) => {
+              if (
+                element.position.x == (x - 1) * 100 - 350 &&
+                element.position.z == (z + 1) * 100 - 350
+              ) {
+                this.pawnGroupYellowRemove.add(element);
+                this.pawnGroupYellowRemove.removeFromParent(element);
+                this.pawnArr[x - 1][z + 1] = 0;
+              }
+            });
+          } else if (j - z == -2) {
+            this.pawnGroupYellow.children.forEach((element) => {
+              if (
+                element.position.x == (x - 1) * 100 - 350 &&
+                element.position.z == (z - 1) * 100 - 350
+              ) {
+                this.pawnGroupYellowRemove.add(element);
+                this.pawnGroupYellowRemove.removeFromParent(element);
+                this.pawnArr[x - 1][z - 1] = 0;
+              }
+            });
           }
         }
 
@@ -355,7 +433,6 @@ class Game {
             }
           }
         }
-        console.table(this.pawnArr);
         // sending a stack of pawns
         const client = io();
         client.emit("turn", {

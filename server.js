@@ -29,7 +29,6 @@ app.post("/TwoPlayers", function (req, res) {
     res.end(JSON.stringify(false));
   }
 });
-
 socketio.on("connection", (client) => {
   client.on("turn", (data) => {
     console.log(data);
