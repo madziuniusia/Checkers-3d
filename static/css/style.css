@@ -37,6 +37,21 @@ button {
     background-color: lightblue;
 }
 
+#time {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background-color: lightblue;
+    top: 60px;
+    right: 10px;
+    border-radius: 30px;
+    text-align: center;
+    display: flexbox;
+    justify-content: center;
+    align-items: center;
+    font-size: 170px;
+}
+
 #alert {
     display: none;
     text-align: center;
@@ -54,6 +69,17 @@ body {
 #p {
     color: greenyellow;
     padding: 5px;
+}
+
+#turn {
+    opacity: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background-color: red;
 }
 
 .center {

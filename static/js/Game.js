@@ -352,6 +352,17 @@ class Game {
     }
   }
 
+  time(player) {
+    net.time(player);
+    if (player == this.myNumber) {
+      document.getElementById("turn").style.display = "none";
+      document.getElementById("header").innerHTML = "TWÓJ RUCH";
+    } else {
+      document.getElementById("turn").style.display = "block";
+      document.getElementById("header").innerHTML = "POCZEKAJ NA SWÓJ RUCH";
+    }
+  }
+
   render = () => {
     TWEEN.update();
     requestAnimationFrame(this.render);
@@ -442,6 +453,12 @@ class Game {
           J: j,
           player: this.myNumber,
         });
+
+        client.emit("turnplayer", {
+          player: this.myNumber,
+        });
+        net.time(this.myNumber);
+
         x = 0;
         z = 0;
         i = 0;

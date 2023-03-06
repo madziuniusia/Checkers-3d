@@ -29,9 +29,23 @@ app.post("/TwoPlayers", function (req, res) {
     res.end(JSON.stringify(false));
   }
 });
+
+let who = "player1";
 socketio.on("connection", (client) => {
+  client.on("turnplayer", (data) => {
+    if (data.player == "player1") who = "player2";
+    else who = "player1";
+    /* if (data.player == "player2") */
+    /* else {
+      if (who == "player1") who = "player2";
+      else who = "player1";
+    } */
+    client.broadcast.emit("turnplayer", {
+      player: who,
+    });
+  });
+
   client.on("turn", (data) => {
-    console.log(data);
     client.broadcast.emit("turn", {
       X: data.X,
       Z: data.Z,
