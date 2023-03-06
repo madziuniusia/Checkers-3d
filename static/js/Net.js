@@ -51,7 +51,9 @@ class Net {
           if (data == true) {
             document.getElementById("root").style.display = "block";
             clearInterval(wait);
-            net.time();
+            //if (net.myNumber == "player1") {
+            net.time(net.myNumber);
+            //}
           }
         });
     }, 100);
@@ -83,11 +85,12 @@ class Net {
       document.getElementById("time").innerHTML = seconds;
       if (seconds == 0) {
         console.log(turnplayer + " mynumber " + myNumber);
-        //if (turnplayer == myNumber) {
-        client.emit("turnplayer", {
-          player: myNumber,
-        });
-        //}
+        document.getElementById("time").innerHTML = "";
+        if (turnplayer == myNumber) {
+          client.emit("turnplayer", {
+            player: myNumber,
+          });
+        }
       }
     }, 1000);
   }
